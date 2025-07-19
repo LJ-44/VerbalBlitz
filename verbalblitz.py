@@ -1,7 +1,10 @@
-# import pygame
-# make game in command prompt first, then try to make it in pygame
+import os
+import time
+import random
+import threading
+import emoji
 
-# game like Word Bomb on roblox
+# game like Word Bomb on Roblox
 
 '''
 # BRAIN DUMP: 
@@ -46,12 +49,6 @@
 '''
 
 #TODO: add more phrases to phrases.txt 
-
-import os
-import time
-import random
-import threading
-import emoji
 
 CORRECT = 0
 
