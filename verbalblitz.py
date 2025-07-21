@@ -1,7 +1,10 @@
-# import pygame
-# make game in command prompt first, then try to make it in pygame
+import os
+import time
+import random
+import threading
+import emoji
 
-# game like Word Bomb on roblox
+# game like Word Bomb on Roblox
 
 '''
 # BRAIN DUMP: 
@@ -47,15 +50,8 @@
 
 #TODO: add more phrases to phrases.txt 
 
-import os
-import time
-import random
-import threading
-import emoji
-
 CORRECT = 0
 
-# words = open("C:\\Users\\lucas\\Documents\\pythonProjects\\VerbalBlitz\\words.txt", "r")
 def start_menu():
     print("Welcome to Verbal Blitz!\n")
     print("Pick a Game Mode:")
@@ -89,7 +85,8 @@ def pick_game_mode():
         os._exit(1)
 
     return game_mode
-
+    
+# running out of time
 def timeout():
     print(f"\nUh oh! You ran out of time! {emoji.emojize(":frowning_face:")}")
     print(f"Score: {CORRECT}")
