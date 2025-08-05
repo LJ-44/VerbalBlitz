@@ -3,52 +3,9 @@ import time
 import random
 import threading
 import emoji
+from collections import defaultdict
 
 # game like Word Bomb on Roblox
-
-'''
-# BRAIN DUMP: 
-
-# Two text files
-# 1: list of english words from a dictionary
-# 2: list of strings, 2 characters, ex: "ar", "el", "pr", etc
-
-# Random Number Generator:
-# pick random string from file 2 
-# user types word, if selected string from file 2 is in user's word, pass to next if, if word in file 1, accept word. 
-
-# Timer:
-# count down from 10 after string is picked
-
-# Text: 
-# prompt: "Quick, type an english word containing {string}!" 
-# lose: "Game Over! You ran out of time!"
-# typo, wrong word, etc: "That word doesn't exist!" (timer continues)
-
-# Difficulties?:
-# Start menu, 3 options, easy medium hard
-# easy: accepts all inputs if its a real word
-# medium: input > 3 letters
-# hard: input > 5 letters
-
-# Start Menu: 
-# "Welcome to Verbal Blitz!" 
-#
-# Choose an Option: 
-#
-# 1. Pick Game Mode:
-#   1. Normal (Word Bomb)
-#   2. Blitz (type as many words as you can containing the string)
-# 2. Exit
-
-# High Score:
-# highest streak of words accepted in a row
-# different high scores need to be stored for different difficulties, game modes, etc
-# for now just write them to a text file
-# after figuring that out, try to figure out .json files to store them
-'''
-
-#TODO: add more phrases to phrases.txt 
 
 CORRECT = 0
 
@@ -61,30 +18,84 @@ def start_menu():
 
 # load words in english dictionary
 def load_words():
-    with open("C:\\Users\\lucas\\Documents\\pythonProjects\\VerbalBlitz\\words.txt") as word_file:
+    with open("words.txt") as word_file:
         valid_words = set(word_file.read().split())
     return valid_words
 
-# load 2-letter phrases
-def load_phrases():
-    with open("C:\\Users\\lucas\\Documents\\pythonProjects\\VerbalBlitz\\phrases.txt") as phrase_file:
-        valid_phrases = set(phrase_file.read().split())
-    return valid_phrases
-
 # game modes
 def pick_game_mode():
-
-    choice = input()
-
-    if choice == '1':
-        game_mode = 'normal'
-    elif choice == '2':
-        game_mode = 'blitz'
-    elif choice == 'q':
-        print("Goodbye!")
-        os._exit(1)
+    
+    valid_choice = False
+    while not valid_choice:
+    
+        choice = input()
+        
+        if choice == '1':
+            game_mode = 'normal'
+            valid_choice = True
+        elif choice == '2':
+            game_mode = 'blitz'
+            valid_choice = True
+        elif choice == 'q':
+            print("Goodbye!")
+            os._exit(1)
+        else:
+            print("That's not a valid choice. Try again")
+            continue
 
     return game_mode
+
+def select_difficulty():
+    
+    with open("words.txt") as word_file:
+        words = [line.strip().lower() for line in word_file if len(line.strip()) > 2]
+
+    pair_freq = defaultdict(int)
+
+    for word in words:
+        for i in range(len(word) - 1):
+            pair = word[i:i+2]
+            pair_freq[pair] += 1
+        
+    easy = [pair for pair, count in pair_freq.items() if count > 15000]
+    medium = [pair for pair, count in pair_freq.items() if 1000 < count <= 15000]
+    hard = [pair for pair, count in pair_freq.items() if 100 < count <= 9000]
+    insane = [pair for pair, count in pair_freq.items() if count <= 5000]
+    
+    print("Select Difficulty\n")
+    print("1. Easy")
+    print("2. Medium")
+    print("3. Hard")
+    print("4. Insane")
+    
+    valid_difficulty = False
+    
+    while not valid_difficulty:
+        difficulty = input()
+        
+        with open("phrases.txt", "w") as phrases_file:
+            if difficulty == '1':
+                valid_difficulty = True
+                for phrase in easy:
+                    phrases_file.write(phrase + "\n")
+            elif difficulty == '2':
+                valid_difficulty = True
+                for phrase in medium:
+                    phrases_file.write(phrase + "\n")
+            elif difficulty == '3':
+                valid_difficulty = True
+                for phrase in hard:
+                    phrases_file.write(phrase + "\n")
+            elif difficulty == '4':
+                valid_difficulty = True
+                for phrase in insane:
+                    phrases_file.write(phrase + "\n")
+            else:
+                print("That's not a valid choice. Try again.")
+                continue
+    with open("phrases.txt", 'r') as phrases_file:
+        phrases = set(phrases_file.read().split())
+    return phrases
     
 # running out of time
 def timeout():
@@ -169,9 +180,9 @@ def main():
     # write setup functions in order of game flow
     start_menu()
     english_words = load_words()
-    set_phrases = load_phrases()
     game_mode = pick_game_mode()
-    run_game_mode(mode=game_mode, words=english_words, phrases=set_phrases)
+    difficulty = select_difficulty()
+    run_game_mode(mode=game_mode, words=english_words, phrases=difficulty)
     #end_game()
 
 if __name__ == "__main__":
